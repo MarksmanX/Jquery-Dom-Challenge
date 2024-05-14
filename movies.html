@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies App</title>
+    <link rel="stylesheet"
+        href="https://unpkg.com/bootstrap/dist/css/bootstrap.css">
+        <style>
+            h1 {
+                font-style: bold;
+                font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            }
+        </style>
+</head>
+<body>
+    <h1>Rate your movies!</h1>
+    <input type="text" id="Title" placeholder="Title of Movie">
+    <input type="number" id="Rating" placeholder="Movie Rating">
+    <button>Submit</button>
+    <div>
+        <label for="Sort">Sort List:</label>
+        <select name="Sort" id="sortDropdown">
+            <option value="alphaAsc">A-Z</option>
+            <option value="alphaDesc">Z-A</option>
+            <option value="ratingAsc">Low to High rating</option>
+            <option value="ratingDesc">High to Low rating</option>
+        </select>
+    </div>    
+    <ul>
+
+    </ul>
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script>
+   $("button").on("click", function() {
+        let movieTitle = $("#Title").val();
+        let rating = $("#Rating").val();
+
+        //Check if movieTitle has at least 2 characters in it
+        if (movieTitle.length < 2) {
+        alert("Please enter a movie title with at least two characters.");
+        return;
+        }   
+
+        //Check if rating is in between 0 and 10
+        if (rating >= 0 && rating <= 10) {
+        const newLi = $("<li>", {text: `${movieTitle}: ${rating}`})
+            .append($("<button>", {text: "Remove", class: "remove"}));
+        $("ul").append(newLi);
+        } else {
+            alert("Please enter a rating between 0 and 10.");
+        }
+    });
+
+    $("ul").on("click", ".remove", function() {
+        $(this).closest("li").remove();
+    });
+
+    // Sort function to sort list items alphabetically
+    function sortAlphabetically(order) {
+        const items = $("ul li").get();
+        items.sort(function(a, b) {
+            const textA = $(a).text().toUpperCase();
+            const textB = $(b).text().toUpperCase();
+            if (order === 'asc') {
+                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+            } else {
+                return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;
+            }
+        });
+        $("ul").empty().append(items);
+    }
+
+    // Sort function to sort list items by rating
+    function sortByRating(order) {
+        const items = $("ul li").get();
+        items.sort(function(a, b) {
+            const ratingA = parseFloat($(a).text().split(': ')[1]);
+            const ratingB = parseFloat($(b).text().split(': ')[1]);
+            if (order === 'asc') {
+                return ratingA - ratingB;
+            } else {
+                return ratingB - ratingA;
+            }
+        });
+        $("ul").empty().append(items);
+    }
+
+    // Event listener for dropdown menu
+    $("#sortDropdown").on("change", function() {
+        const selectedOption = $(this).val();
+        switch (selectedOption) {
+            case 'alphaAsc':
+                sortAlphabetically('asc');
+                break;
+            case 'alphaDesc':
+                sortAlphabetically('desc');
+                break;
+            case 'ratingAsc':
+                sortByRating('asc');
+                break;
+            case 'ratingDesc':
+                sortByRating('desc');
+                break;
+            default:
+                break;
+        }
+    });
+
+</script>
+</html>
